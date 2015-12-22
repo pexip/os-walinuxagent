@@ -1,6 +1,2 @@
-# To disable the Microsoft Azure Agent, set WALINUXAGENT_ENABLED=0
-WALINUXAGENT_ENABLED=1
-
-# Setting this variable to anything other than 1, runs the script
-# in stand-alone mode. This is heavily, heavily discouraged.
-WAXLINUXAGENT_PACKAGED=1
+# To enable the Microsoft Azure Agent, set WALINUXAGENT_ENABLED=1
+WALINUXAGENT_ENABLED=0
