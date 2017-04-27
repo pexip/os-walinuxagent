@@ -1,3 +1,9 @@
+walinuxagent (2.1.2-0pexip2) pexip; urgency=low
+
+  * Rebuild, fixing FTBFS 
+
+ -- John-Mark Bell <jmb@pexip.com>  Thu, 27 Apr 2017 12:45:06 +0100
+
 walinuxagent (2.1.2-0pexip1) pexip; urgency=low
 
   * Package for Pexip
