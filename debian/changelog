@@ -1,3 +1,10 @@
+walinuxagent (2.1.2-0pexip3) pexip; urgency=low
+
+  * debian/patches/graceful-probe.patch: hacky fix to protocol probing
+
+ -- John-Mark Bell <jmb@pexip.com>  Thu, 05 Jul 2017 13:05:16 +0100
+
+
 walinuxagent (2.1.2-0pexip2) pexip; urgency=low
 
   * Rebuild, fixing FTBFS 
