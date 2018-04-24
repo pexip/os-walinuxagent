@@ -1,0 +1,19 @@
+[Unit]
+Description=Microsoft Azure Linux agent
+After=network.target
+ConditionVirtualization=microsoft
+ConditionFileIsExecutable=/usr/sbin/waagent
+ConditionPathExists=/etc/waagent.conf
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/default/walinuxagent
+ExecStartPre=/usr/bin/test "$WALINUXAGENT_ENABLED" = "1"
+ExecStart=/usr/sbin/waagent -daemon
+RuntimeDirectory=walinuxagent
+RuntimeDirectoryMode=0755
+User=waagent
+Group=waagent
+
+[Install]
+WantedBy=multi-user.target

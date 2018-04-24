@@ -1,3 +1,10 @@
+walinuxagent (2.1.2-0pexip4) pexip; urgency=low
+
+  * Add systemd support
+  * Remove upstart support
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 24 Apr 2018 23:02:45 +0100
+
 walinuxagent (2.1.2-0pexip3) pexip; urgency=low
 
   * debian/patches/graceful-probe.patch: hacky fix to protocol probing

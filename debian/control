@@ -4,7 +4,12 @@ Priority: extra
 Maintainer: Pexip AS <packaging@pexip.com>
 XSBC-Pexip-Original-Maintainer: Ben Howard <ben.howard@ubuntu.com>
 XSBC-Original-Maintainer: Microsoft Corporation <walinuxagent@microsoft.com>
-Build-Depends: debhelper (>= 8), dh-python, python-all, python-setuptools, openssl (>=1.0)
+Build-Depends: debhelper (>= 8),
+               dh-python,
+               python-all,
+               python-setuptools,
+               openssl (>=1.0),
+               dh-systemd
 Standards-Version: 3.9.3
 XS-Python-Version: all
 Homepage: http://go.microsoft.com/fwlink/?LinkId=250998
