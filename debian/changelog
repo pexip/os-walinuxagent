@@ -2,6 +2,7 @@ walinuxagent (2.1.2-0pexip4) pexip; urgency=low
 
   * Add systemd support
   * Remove upstart support
+  * Build-Depend on python-pyasn1
 
  -- John-Mark Bell <jmb@pexip.com>  Tue, 24 Apr 2018 23:02:45 +0100
 

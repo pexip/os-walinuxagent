@@ -9,7 +9,8 @@ Build-Depends: debhelper (>= 8),
                python-all,
                python-setuptools,
                openssl (>=1.0),
-               dh-systemd
+               dh-systemd,
+               python-pyasn1
 Standards-Version: 3.9.3
 XS-Python-Version: all
 Homepage: http://go.microsoft.com/fwlink/?LinkId=250998

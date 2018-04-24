@@ -1,4 +1,7 @@
 #!/usr/bin/make -f
+
+export PYBUILD_INSTALL_ARGS=--install-scripts /usr/sbin
+
 %:
 	dh $@ --with python2,systemd --buildsystem=pybuild
 
