@@ -8,9 +8,9 @@ Build-Depends: debhelper (>= 9),
                dh-python,
                dh-systemd,
                openssl,
-               python-all,
-               python-pyasn1,
-               python-setuptools,
+               python,
+               python3,
+               python3-setuptools,
 Standards-Version: 3.9.6
 Homepage: https://github.com/Azure/WALinuxAgent
 
@@ -21,7 +21,7 @@ Depends: openssl,
          passwd,
          util-linux,
          ${misc:Depends},
-         ${python:Depends}
+         ${python3:Depends}
 Conflicts: network-manager
 Description: Microsoft Azure Linux Agent
  The Microsoft Azure Linux Agent supports the provisioning and running of Linux
