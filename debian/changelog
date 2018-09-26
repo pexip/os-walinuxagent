@@ -1,3 +1,9 @@
+walinuxagent (2.2.32-0pexip1) pexip; urgency=low
+
+  * New upstream release
+
+ -- John-Mark Bell <jmb@pexip.com>  Wed, 26 Sep 2018 13:28:13 +0100
+
 walinuxagent (2.1.2-0pexip4) pexip; urgency=low
 
   * Add systemd support

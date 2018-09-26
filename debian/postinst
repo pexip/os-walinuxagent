@@ -9,6 +9,7 @@ case "$1" in
            touch /var/log/waagent.log
            chown waagent:waagent /var/log/waagent.log
            chmod 644 /var/log/waagent.log
+           install -d --mode=0755 -o waagent -g waagent "/var/log/azure"
        fi
     ;;
 

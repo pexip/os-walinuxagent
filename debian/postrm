@@ -4,6 +4,7 @@ set -e
 
 case "$1" in
     purge)
+        rm -rf /var/log/azure > /dev/null || true
         rm -rf /var/log/waagent.log* > /dev/null || true
         rm -rf /var/lib/waagent > /dev/null || true
         deluser --quiet --system waagent > /dev/null || true
