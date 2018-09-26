@@ -168,6 +168,10 @@ def get_data_files(name, version, fullname):
         if version.startswith("7.1"):
             # TODO this is a mitigation to systemctl bug on 7.1
             set_sysv_files(data_files)
+    elif name == 'pexos':
+        set_bin_files(data_files)
+        set_conf_files(data_files, src=["config/pexos/waagent.conf"])
+        set_logrotate_files(data_files)
     else:
         # Use default setting
         set_bin_files(data_files)

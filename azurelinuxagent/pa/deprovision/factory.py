@@ -23,6 +23,7 @@ from .arch import ArchDeprovisionHandler
 from .clearlinux import ClearLinuxDeprovisionHandler
 from .coreos import CoreOSDeprovisionHandler
 from .ubuntu import UbuntuDeprovisionHandler, Ubuntu1804DeprovisionHandler
+from .pexos import PexOSDeprovisionHandler
 
 
 from distutils.version import LooseVersion as Version
@@ -42,6 +43,8 @@ def get_deprovision_handler(distro_name=DISTRO_NAME,
         return CoreOSDeprovisionHandler()
     if distro_name == "clear linux":
         return ClearLinuxDeprovisionHandler()
+    if distro_name == "pexos":
+        return PexOSDeprovisionHandler()
 
     return DeprovisionHandler()
 
