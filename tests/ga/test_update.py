@@ -1117,7 +1117,7 @@ class TestUpdate(UpdateTestCase):
 
         args, kwargs = self._test_run_latest()
 
-        self.assertEqual(args[0], [get_python_cmd(), "-u", sys.argv[0], "-run-exthandlers"])
+        self.assertEqual(' '.join(args[0]), ' '.join([get_python_cmd(), "-u", sys.argv[0], "-run-exthandlers"]))
         self.assertEqual(True, 'cwd' in kwargs)
         self.assertEqual(os.getcwd(), kwargs['cwd'])
 
