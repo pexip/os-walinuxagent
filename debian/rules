@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+export LC_ALL=C.UTF-8
+
 export PYBUILD_DISABLE_python2=1
 export PYBUILD_INSTALL_ARGS=--install-scripts /usr/sbin
 
