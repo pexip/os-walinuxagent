@@ -183,9 +183,10 @@ class TestHttpOperations(AgentTestCase):
     def test_get_http_proxy_none_is_default(self, mock_host, mock_port):
         mock_host.return_value = None
         mock_port.return_value = None
-        h, p = restutil._get_http_proxy()
-        self.assertEqual(None, h)
-        self.assertEqual(None, p)
+        with patch.dict(os.environ, {}, True):
+            h, p = restutil._get_http_proxy()
+            self.assertEqual(None, h)
+            self.assertEqual(None, p)
 
     @patch('azurelinuxagent.common.conf.get_httpproxy_port')
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
@@ -203,11 +204,12 @@ class TestHttpOperations(AgentTestCase):
     def test_get_http_proxy_configuration_requires_host(self, mock_host, mock_port):
         mock_host.return_value = None
         mock_port.return_value = None
-        h, p = restutil._get_http_proxy()
-        self.assertEqual(None, h)
-        self.assertEqual(None, p)
-        self.assertEqual(1, mock_host.call_count)
-        self.assertEqual(0, mock_port.call_count)
+        with patch.dict(os.environ, {}, True):
+            h, p = restutil._get_http_proxy()
+            self.assertEqual(None, h)
+            self.assertEqual(None, p)
+            self.assertEqual(1, mock_host.call_count)
+            self.assertEqual(0, mock_port.call_count)
 
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
     def test_get_http_proxy_http_uses_httpproxy(self, mock_host):
