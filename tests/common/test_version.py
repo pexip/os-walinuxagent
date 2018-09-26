@@ -19,8 +19,6 @@ from __future__ import print_function
 
 import textwrap
 
-import mock
-
 from azurelinuxagent.common.version import set_current_agent, \
     AGENT_LONG_VERSION, AGENT_VERSION, AGENT_NAME, AGENT_NAME_PATTERN, \
     get_f5_platform, get_distro
@@ -59,32 +57,32 @@ class TestAgentVersion(AgentTestCase):
         AgentTestCase.setUp(self)
         return
 
-    @mock.patch('platform.system', side_effect=freebsd_system)
-    @mock.patch('re.sub', side_effect=freebsd_system_release)
+    @patch('platform.system', side_effect=freebsd_system)
+    @patch('re.sub', side_effect=freebsd_system_release)
     def test_distro_is_correct_format_when_freebsd(self, platform_system_name, mock_variable):
         osinfo = get_distro()
         freebsd_list = ['freebsd', "10.0", '', 'freebsd']
         self.assertListEqual(freebsd_list, osinfo)
         return
 
-    @mock.patch('platform.system', side_effect=openbsd_system)
-    @mock.patch('re.sub', side_effect=openbsd_system_release)
+    @patch('platform.system', side_effect=openbsd_system)
+    @patch('re.sub', side_effect=openbsd_system_release)
     def test_distro_is_correct_format_when_openbsd(self, platform_system_name, mock_variable):
         osinfo = get_distro()
         openbsd_list = ['openbsd', "20.0", '', 'openbsd']
         self.assertListEqual(openbsd_list, osinfo)
         return
 
-    @mock.patch('platform.system', side_effect=default_system)
-    @mock.patch('platform.dist', side_effect=default_system_no_linux_distro)
+    @patch('platform.system', side_effect=default_system)
+    @patch('platform.dist', side_effect=default_system_no_linux_distro)
     def test_distro_is_correct_format_when_default_case(self, platform_system_name, default_system_no_linux):
         osinfo = get_distro()
         default_list = ['', '', '', '']
         self.assertListEqual(default_list, osinfo)
         return
 
-    @mock.patch('platform.system', side_effect=default_system)
-    @mock.patch('platform.dist', side_effect=default_system_exception)
+    @patch('platform.system', side_effect=default_system)
+    @patch('platform.dist', side_effect=default_system_exception)
     def test_distro_is_correct_for_exception_case(self, platform_system_name, default_system_no_linux):
         osinfo = get_distro()
         default_list = ['unknown', 'FFFF', '', '']
@@ -148,7 +146,7 @@ class TestGetF5Platforms(AgentTestCase):
         Changelist: 1874858
         JobID: 705993""")
 
-        mo = mock.mock_open(read_data=version_file)
+        mo = mock_open(read_data=version_file)
         with patch(open_patch(), mo):
             platform = get_f5_platform()
             self.assertTrue(platform[0] == 'bigip')
@@ -169,7 +167,7 @@ class TestGetF5Platforms(AgentTestCase):
         Changelist: 1773831
         JobID: 673467""")
 
-        mo = mock.mock_open(read_data=version_file)
+        mo = mock_open(read_data=version_file)
         with patch(open_patch(), mo):
             platform = get_f5_platform()
             self.assertTrue(platform[0] == 'bigip')
@@ -190,7 +188,7 @@ class TestGetF5Platforms(AgentTestCase):
         Changelist: 1486072
         JobID: 536212""")
 
-        mo = mock.mock_open(read_data=version_file)
+        mo = mock_open(read_data=version_file)
         with patch(open_patch(), mo):
             platform = get_f5_platform()
             self.assertTrue(platform[0] == 'bigip')
@@ -211,7 +209,7 @@ class TestGetF5Platforms(AgentTestCase):
         Changelist: 1924048
         JobID: 734712""")
 
-        mo = mock.mock_open(read_data=version_file)
+        mo = mock_open(read_data=version_file)
         with patch(open_patch(), mo):
             platform = get_f5_platform()
             self.assertTrue(platform[0] == 'iworkflow')
@@ -232,7 +230,7 @@ class TestGetF5Platforms(AgentTestCase):
         Changelist: 1907534
         JobID: 726344""")
 
-        mo = mock.mock_open(read_data=version_file)
+        mo = mock_open(read_data=version_file)
         with patch(open_patch(), mo):
             platform = get_f5_platform()
             self.assertTrue(platform[0] == 'bigiq')

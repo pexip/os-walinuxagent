@@ -38,9 +38,9 @@ from azurelinuxagent.common.version import PY_VERSION_MAJOR
 
 # Import mock module for Python2 and Python3
 try:
-    from unittest.mock import Mock, patch, MagicMock, ANY, DEFAULT, call
+    from unittest.mock import Mock, patch, MagicMock, ANY, DEFAULT, call, mock_open
 except ImportError:
-    from mock import Mock, patch, MagicMock, ANY, DEFAULT, call
+    from mock import Mock, patch, MagicMock, ANY, DEFAULT, call, mock_open
 
 test_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(test_dir, "data")

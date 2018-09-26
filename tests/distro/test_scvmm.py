@@ -18,7 +18,6 @@
 # http://msdn.microsoft.com/en-us/library/cc227282%28PROT.10%29.aspx
 # http://msdn.microsoft.com/en-us/library/cc227259%28PROT.13%29.aspx
 
-import mock
 from tests.tools import *
 
 import azurelinuxagent.daemon.scvmm as scvmm
@@ -55,7 +54,7 @@ class TestSCVMM(AgentTestCase):
         conf.get_detect_scvmm_env = Mock(return_value=True)
 
         # execute
-        with mock.patch.object(DefaultOSUtil, 'mount_dvd') as patch_mount:
+        with patch.object(DefaultOSUtil, 'mount_dvd') as patch_mount:
             with patch('os.listdir', return_value=["sr0", "sr1", "sr2"]):
                 scvmm.ScvmmHandler().detect_scvmm_env()
                 # assert
@@ -73,7 +72,7 @@ class TestSCVMM(AgentTestCase):
         if os.path.exists(scvmm_file):
             os.remove(scvmm_file)
 
-        with mock.patch.object(scvmm.ScvmmHandler, 'start_scvmm_agent') as patch_start:
+        with patch.object(scvmm.ScvmmHandler, 'start_scvmm_agent') as patch_start:
             # execute
             scvmm.ScvmmHandler().detect_scvmm_env()
             # assert
