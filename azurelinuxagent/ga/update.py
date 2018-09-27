@@ -445,7 +445,7 @@ class UpdateHandler(object):
     def _ensure_readonly_files(self):
         for g in READONLY_FILE_GLOBS:
             for path in glob.iglob(os.path.join(conf.get_lib_dir(), g)):
-                os.chmod(path, stat.S_IRUSR)
+                os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
 
     def _evaluate_agent_health(self, latest_agent):
         """

@@ -774,7 +774,7 @@ class TestUpdate(UpdateTestCase):
         for path in test_files:
             mode = os.stat(path).st_mode
             mode &= (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-            self.assertEqual(0, mode ^ stat.S_IRUSR)
+            self.assertEqual(0, mode ^ (stat.S_IRUSR | stat.S_IWUSR))
 
     def test_ensure_readonly_leaves_unmodified(self):
         test_files = [
