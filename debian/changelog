@@ -1,3 +1,9 @@
+walinuxagent (2.2.32-0pexip2) pexip; urgency=low
+
+  * Fix removal of upstart config
+
+ -- John-Mark Bell <jmb@pexip.com>  Mon, 12 Nov 2018 18:17:21 +0000
+
 walinuxagent (2.2.32-0pexip1) pexip; urgency=low
 
   * New upstream release

@@ -1,1 +1,1 @@
-rm_conffile /etc/init/walinuxagent.conf 2.1.2-0pexip4
+rm_conffile /etc/init/walinuxagent.conf 2.2.32-0pexip2~
