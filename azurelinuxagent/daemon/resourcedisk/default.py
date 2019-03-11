@@ -16,6 +16,7 @@
 #
 
 import os
+import stat
 import re
 import sys
 import threading
@@ -245,16 +246,27 @@ class ResourceDiskHandler(object):
         else:
             return 'mount {0} {1}'.format(partition, mount_point)
 
+    @staticmethod
+    def check_existing_swap_file(swapfile, swaplist, size):
+        if swapfile in swaplist and os.path.isfile(swapfile) and os.path.getsize(swapfile) == size:
+            logger.info("Swap already enabled")
+            # restrict access to owner (remove all access from group, others)
+            swapfile_mode = os.stat(swapfile).st_mode
+            if swapfile_mode & (stat.S_IRWXG | stat.S_IRWXO):
+                swapfile_mode = swapfile_mode & ~(stat.S_IRWXG | stat.S_IRWXO)
+                logger.info("Changing mode of {0} to {1:o}".format(swapfile, swapfile_mode))
+                os.chmod(swapfile, swapfile_mode)
+            return True
+
+        return False
+
     def create_swap_space(self, mount_point, size_mb):
         size_kb = size_mb * 1024
         size = size_kb * 1024
         swapfile = os.path.join(mount_point, 'swapfile')
         swaplist = shellutil.run_get_output("swapon -s")[1]
 
-        if swapfile in swaplist \
-                and os.path.isfile(swapfile) \
-                and os.path.getsize(swapfile) == size:
-            logger.info("Swap already enabled")
+        if self.check_existing_swap_file(swapfile, swaplist, size):
             return
 
         if os.path.isfile(swapfile) and os.path.getsize(swapfile) != size:
@@ -305,13 +317,18 @@ class ResourceDiskHandler(object):
                 # Probable errors:
                 #  - OSError: Seen on Cygwin, libc notimpl?
                 #  - AttributeError: What if someone runs this under...
+                fd = None
+
                 try:
-                    with open(filename, 'w') as f:
-                        os.posix_fallocate(f.fileno(), 0, nbytes)
-                        return 0
+                    fd = os.open(filename, os.O_CREAT | os.O_WRONLY | os.O_EXCL, stat.S_IRUSR | stat.S_IWUSR)
+                    os.posix_fallocate(fd, 0, nbytes)
+                    return 0
                 except:
                     # Not confident with this thing, just keep trying...
                     pass
+                finally:
+                    if fd is not None:
+                        os.close(fd)
 
             # fallocate command
             ret = shellutil.run(
