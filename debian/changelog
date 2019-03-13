@@ -1,3 +1,9 @@
+walinuxagent (2.2.32-0pexip4) pexip; urgency=low
+
+  * Apply fix for CVE-2019-0804 from Debian
+
+ -- John-Mark Bell <jmb@pexip.com>  Wed, 13 Mar 2019 00:28:24 +0000
+
 walinuxagent (2.2.32-0pexip3) pexip; urgency=low
 
   * Fix removal of upstart config some more
@@ -29,7 +35,6 @@ walinuxagent (2.1.2-0pexip3) pexip; urgency=low
   * debian/patches/graceful-probe.patch: hacky fix to protocol probing
 
  -- John-Mark Bell <jmb@pexip.com>  Thu, 05 Jul 2017 13:05:16 +0100
-
 
 walinuxagent (2.1.2-0pexip2) pexip; urgency=low
 
