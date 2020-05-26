@@ -44,7 +44,6 @@ try:
     from unittest.mock import Mock, patch, MagicMock, ANY, DEFAULT, call, mock_open
 
     # Import mock module for Python2 and Python3
-    from bin.waagent2 import Agent
 except ImportError:
     from mock import Mock, patch, MagicMock, ANY, DEFAULT, call, mock_open
 
@@ -134,7 +133,7 @@ def mock_get_osutil(*args):
     # It's a known issue that calling platform.linux_distribution() in Travis will result in the wrong info.
     # See https://github.com/travis-ci/travis-ci/issues/2755
     # When running in Travis, use manual distro resolution that relies on environment variables.
-    if running_under_travis():
+    if False and running_under_travis():
         return get_osutil_for_travis()
     else:
         return _get_osutil(*args)
@@ -152,6 +151,8 @@ def are_cgroups_enabled():
 
 
 def is_trusty_in_travis():
+    return False
+
     # In Travis, Trusty (Ubuntu 14.04) is missing the cpuacct.stat file,
     # possibly because the accounting is not enabled by default.
     if not running_under_travis():
