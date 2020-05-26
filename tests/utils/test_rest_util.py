@@ -285,8 +285,9 @@ class TestHttpOperations(AgentTestCase):
                 self.assertEqual(i, j)
 
     def test_get_no_proxy_default(self):
-        no_proxy_generator = restutil.get_no_proxy()
-        self.assertIsNone(no_proxy_generator)
+        with patch.dict(os.environ, clear=True):
+            no_proxy_generator = restutil.get_no_proxy()
+            self.assertIsNone(no_proxy_generator)
 
     def test_is_ipv4_address(self):
         self.assertTrue(restutil.is_ipv4_address('8.8.8.8'))

@@ -31,7 +31,7 @@ from azurelinuxagent.common.future import ustr
 from azurelinuxagent.common.osutil import get_osutil
 from azurelinuxagent.common.utils import fileutil
 from tests.tools import AgentTestCase, call, patch, open_patch, load_data, \
-    running_under_travis, skip_if_predicate_true
+    running_under_travis, skip_if_predicate_true, mock_open
 
 actual_get_proc_net_route = 'azurelinuxagent.common.osutil.default.DefaultOSUtil._get_proc_net_route'
 

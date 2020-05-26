@@ -2201,6 +2201,7 @@ class TestExtensionWithCGroupsEnabled(AgentTestCase):
         monitor_handler.protocol_util.get_protocol = Mock(return_value=protocol)
         return ext_handler, monitor_handler, protocol
 
+    @skip_if_predicate_false(i_am_root, "Test does not run when non-root")
     @attr('requires_sudo')
     def test_ext_handler_with_cgroup_enabled(self, *args):
         self.assertTrue(i_am_root(), "Test does not run when non-root")
@@ -2271,6 +2272,7 @@ class TestExtensionWithCGroupsEnabled(AgentTestCase):
                                   "FileSystemCgroupAPI based test and one for SystemDCgroupAPI based test. @vrdmr will "
                                   "be splitting this test in subsequent PRs")
     @skip_if_predicate_true(is_trusty_in_travis, "Does not run on Trusty in Travis as CPU cgroup is not mounted")
+    @skip_if_predicate_false(i_am_root, "Test does not run when non-root")
     @patch('azurelinuxagent.common.event.EventLogger.add_metric')
     @patch('azurelinuxagent.common.event.EventLogger.add_event')
     @attr('requires_sudo')
@@ -2315,6 +2317,7 @@ class TestExtensionWithCGroupsEnabled(AgentTestCase):
             finally:
                 CGroupConfigurator._instance = cgroup_configurator_instance
 
+    @skip_if_predicate_false(i_am_root, "Test does not run when non-root")
     @attr('requires_sudo')
     def test_ext_handler_with_systemd_cgroup_enabled(self, *args):
         self.assertTrue(i_am_root(), "Test does not run when non-root")

@@ -12,7 +12,7 @@ from azurelinuxagent.common.cgroupconfigurator import CGroupConfigurator
 from azurelinuxagent.common.exception import ProtocolError, ExtensionError, ExtensionErrorCodes
 from azurelinuxagent.common.event import WALAEventOperation
 from azurelinuxagent.common.utils.extensionprocessutil import TELEMETRY_MESSAGE_MAX_LEN, format_stdout_stderr, read_output
-from tests.tools import AgentTestCase, patch, mock_sleep
+from tests.tools import AgentTestCase, ANY, patch, mock_sleep
 
 
 class TestExtHandlers(AgentTestCase):
@@ -554,7 +554,7 @@ sys.stderr.write("E" * 5 * 1024 * 1024)
         self.assertGreaterEqual(len(output), 1024)
         self.assertLessEqual(len(output), TELEMETRY_MESSAGE_MAX_LEN)
 
-        mock_format.assert_called_once()
+        mock_format.assert_called_once_with(ANY, ANY)
 
         args, kwargs = mock_format.call_args
         stdout, stderr = args

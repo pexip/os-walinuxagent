@@ -628,7 +628,7 @@ class TestWireClient(AgentTestCase):
                         as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireProtocol.download_ext_handler_pkg_through_host",
                                wraps=protocol.download_ext_handler_pkg_through_host) as patch_host:
-                        ret = protocol.download_ext_handler_pkg("uri", destination)
+                        ret = protocol.download_ext_handler_pkg("https://nowhere.msft/uri", destination)
                         self.assertEquals(ret, True)
 
                         self.assertEquals(patch_host.call_count, 0)
@@ -657,7 +657,7 @@ class TestWireClient(AgentTestCase):
                         as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireProtocol.download_ext_handler_pkg_through_host",
                                wraps=protocol.download_ext_handler_pkg_through_host) as patch_host:
-                        ret = protocol.download_ext_handler_pkg("uri", destination)
+                        ret = protocol.download_ext_handler_pkg("https://nowhere.msft/uri", destination)
                         self.assertEquals(ret, True)
 
                         self.assertEquals(patch_host.call_count, 1)
@@ -687,7 +687,7 @@ class TestWireClient(AgentTestCase):
                         as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireProtocol.download_ext_handler_pkg_through_host",
                                wraps=protocol.download_ext_handler_pkg_through_host) as patch_host:
-                        ret = protocol.download_ext_handler_pkg("uri", destination)
+                        ret = protocol.download_ext_handler_pkg("https://nowhere.msft/uri", destination)
                         self.assertEquals(ret, True)
 
                         self.assertEquals(patch_host.call_count, 2)
@@ -714,7 +714,7 @@ class TestWireClient(AgentTestCase):
                         as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireProtocol.download_ext_handler_pkg_through_host",
                                wraps=protocol.download_ext_handler_pkg_through_host) as patch_host:
-                        ret = protocol.download_ext_handler_pkg("uri", destination)
+                        ret = protocol.download_ext_handler_pkg("https://nowhere.msft/uri", destination)
                         self.assertEquals(ret, False)
 
                         self.assertEquals(patch_host.call_count, 2)
@@ -739,7 +739,7 @@ class TestWireClient(AgentTestCase):
                 with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch", wraps=client.fetch) as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch_manifest_through_host",
                                wraps=client.fetch_manifest_through_host) as patch_host:
-                        ret = client.fetch_manifest([VMAgentManifestUri(uri="uri1")])
+                        ret = client.fetch_manifest([VMAgentManifestUri(uri="https://nowhere.msft/uri1")])
                         self.assertEquals(ret, "OK")
 
                         self.assertEquals(patch_host.call_count, 0)
@@ -768,7 +768,7 @@ class TestWireClient(AgentTestCase):
                 with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch", wraps=client.fetch) as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch_manifest_through_host",
                                wraps=client.fetch_manifest_through_host) as patch_host:
-                        ret = client.fetch_manifest([VMAgentManifestUri(uri="uri1")])
+                        ret = client.fetch_manifest([VMAgentManifestUri(uri="https://nowhere.msft/uri1")])
                         self.assertEquals(ret, "OK")
 
                         self.assertEquals(patch_host.call_count, 1)
@@ -800,7 +800,7 @@ class TestWireClient(AgentTestCase):
                 with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch", wraps=client.fetch) as patch_direct:
                     with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch_manifest_through_host",
                                wraps=client.fetch_manifest_through_host) as patch_host:
-                        ret = client.fetch_manifest([VMAgentManifestUri(uri="uri1")])
+                        ret = client.fetch_manifest([VMAgentManifestUri(uri="https://nowhere.msft/uri1")])
                         self.assertEquals(ret, "OK")
 
                         self.assertEquals(patch_host.call_count, 2)
@@ -826,7 +826,7 @@ class TestWireClient(AgentTestCase):
                     with patch("azurelinuxagent.common.protocol.wire.WireClient.fetch_manifest_through_host",
                                wraps=client.fetch_manifest_through_host) as patch_host:
                         with self.assertRaises(ExtensionDownloadError):
-                            client.fetch_manifest([VMAgentManifestUri(uri="uri1")])
+                            client.fetch_manifest([VMAgentManifestUri(uri="https://nowhere.msft/uri1")])
 
                             self.assertEquals(patch_host.call_count, 2)
                             # The host channel calls the direct function under the covers
@@ -841,7 +841,7 @@ class TestWireClient(AgentTestCase):
         mock_get_artifact_request.return_value = "dummy_url", "dummy_header"
         client = WireClient("foo.bar")
         client.ext_conf = ExtensionsConfig(None)
-        client.ext_conf.artifacts_profile_blob = "testurl"
+        client.ext_conf.artifacts_profile_blob = "https://nowhere.msft/testurl"
         json_profile = b'{ "onHold": true }'
 
         HostPluginProtocol.set_default_channel(False)
@@ -868,7 +868,7 @@ class TestWireClient(AgentTestCase):
         mock_get_artifact_request.return_value = "dummy_url", "dummy_header"
         client = WireClient("foo.bar")
         client.ext_conf = ExtensionsConfig(None)
-        client.ext_conf.artifacts_profile_blob = "testurl"
+        client.ext_conf.artifacts_profile_blob = "https://nowhere.msft/testurl"
         json_profile = b'{ "onHold": true }'
 
         HostPluginProtocol.set_default_channel(False)
@@ -900,7 +900,7 @@ class TestWireClient(AgentTestCase):
         mock_get_artifact_request.return_value = "dummy_url", "dummy_header"
         client = WireClient("foo.bar")
         client.ext_conf = ExtensionsConfig(None)
-        client.ext_conf.artifacts_profile_blob = "testurl"
+        client.ext_conf.artifacts_profile_blob = "https://nowhere.msft/testurl"
         json_profile = b'{ "onHold": true }'
 
         HostPluginProtocol.set_default_channel(False)
@@ -932,7 +932,7 @@ class TestWireClient(AgentTestCase):
         mock_get_artifact_request.return_value = "dummy_url", "dummy_header"
         client = WireClient("foo.bar")
         client.ext_conf = ExtensionsConfig(None)
-        client.ext_conf.artifacts_profile_blob = "testurl"
+        client.ext_conf.artifacts_profile_blob = "https://nowhere.msft/testurl"
         json_profile = b'{ "onHold": true }'
 
         HostPluginProtocol.set_default_channel(False)

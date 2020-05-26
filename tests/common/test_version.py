@@ -24,7 +24,7 @@ import azurelinuxagent.common.conf as conf
 from azurelinuxagent.common.version import set_current_agent, \
     AGENT_LONG_VERSION, AGENT_VERSION, AGENT_NAME, AGENT_NAME_PATTERN, \
     get_f5_platform, get_distro
-from tests.tools import AgentTestCase, open_patch, patch
+from tests.tools import AgentTestCase, mock_open, open_patch, patch
 
 
 def freebsd_system():

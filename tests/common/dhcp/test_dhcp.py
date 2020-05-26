@@ -17,7 +17,7 @@
 
 import azurelinuxagent.common.dhcp as dhcp
 import azurelinuxagent.common.osutil.default as osutil
-from tests.tools import AgentTestCase, open_patch, patch
+from tests.tools import AgentTestCase, mock_open, open_patch, patch
 
 
 class TestDHCP(AgentTestCase):
@@ -31,6 +31,7 @@ class TestDHCP(AgentTestCase):
     def test_wireserver_route_exists(self):
         # setup
         dhcp_handler = dhcp.get_dhcp_handler()
+        dhcp_handler.osutil = osutil.DefaultOSUtil()
         self.assertTrue(dhcp_handler.endpoint is None)
         self.assertTrue(dhcp_handler.routes is None)
         self.assertTrue(dhcp_handler.gateway is None)

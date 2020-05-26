@@ -52,7 +52,7 @@ from azurelinuxagent.ga.monitor import generate_extension_metrics_telemetry_dict
 from tests.common.test_cgroupstelemetry import make_new_cgroup
 from tests.protocol.mockwiredata import DATA_FILE, WireProtocolData
 from tests.tools import Mock, MagicMock, patch, load_data, AgentTestCase, data_dir, are_cgroups_enabled, \
-    i_am_root, skip_if_predicate_false, is_trusty_in_travis, skip_if_predicate_true
+    i_am_root, skip_if_predicate_false, is_trusty_in_travis, skip_if_predicate_true, mock_open
 
 
 class ResponseMock(Mock):

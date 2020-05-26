@@ -7,7 +7,7 @@ from azurelinuxagent.common.protocol.restapi import ExtHandler, ExtHandlerProper
 from azurelinuxagent.common.protocol.wire import WireProtocol
 from azurelinuxagent.ga.exthandlers import ExtHandlerInstance, NUMBER_OF_DOWNLOAD_RETRIES
 from azurelinuxagent.common.exception import ExtensionDownloadError, ExtensionErrorCodes
-from tests.tools import AgentTestCase, patch
+from tests.tools import AgentTestCase, ANY, patch
 
 
 class DownloadExtensionTestCase(AgentTestCase):
@@ -105,8 +105,8 @@ class DownloadExtensionTestCase(AgentTestCase):
                 self.ext_handler_instance.download()
 
         # first download attempt should succeed
-        mock_download_ext_handler_pkg.assert_called_once()
-        mock_report_event.assert_called_once()
+        mock_download_ext_handler_pkg.assert_called_once_with(ANY, ANY)
+        mock_report_event.assert_called_once_with(duration=ANY, message="Download succeeded")
 
         self._assert_download_and_expand_succeeded()
 
@@ -132,7 +132,7 @@ class DownloadExtensionTestCase(AgentTestCase):
         with patch("azurelinuxagent.common.protocol.wire.WireProtocol.download_ext_handler_pkg", side_effect=download_ext_handler_pkg) as mock_download_ext_handler_pkg:
             self.ext_handler_instance.download()
 
-        mock_download_ext_handler_pkg.assert_called_once()
+        mock_download_ext_handler_pkg.assert_called_once_with(ANY, ANY)
 
         self._assert_download_and_expand_succeeded()
 
