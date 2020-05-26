@@ -10,6 +10,7 @@ Build-Depends: debhelper (>= 9),
                openssl,
                python,
                python3,
+               python3-nose,
                python3-setuptools,
 Standards-Version: 3.9.6
 Homepage: https://github.com/Azure/WALinuxAgent
