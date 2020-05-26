@@ -3,14 +3,15 @@
 
 from __future__ import print_function
 
-from azurelinuxagent.common.event import *
+import tempfile
+import unittest
+
 from azurelinuxagent.common.protocol.hostplugin import *
 from azurelinuxagent.common.protocol.metadata import *
 from azurelinuxagent.common.protocol.wire import *
-from azurelinuxagent.common.utils.fileutil import *
 from azurelinuxagent.ga.update import *
+from tests.tools import AgentTestCase, call, data_dir, DEFAULT, patch, load_bin_data, load_data, Mock, MagicMock
 
-from tests.tools import *
 
 NO_ERROR = {
     "last_failure" : 0.0,
@@ -1104,13 +1105,12 @@ class TestUpdate(UpdateTestCase):
         self._test_run_latest(mock_time=mock_time)
         self.assertEqual(1, mock_time.sleep_interval)
 
-    def test_run_latest_polls_moderately_if_installed_not_latest(self):
+    def test_run_latest_polls_every_second_if_installed_not_latest(self):
         self.prepare_agents()
 
-        mock_child = ChildMock(return_value=0)
         mock_time = TimeMock(time_increment=CHILD_HEALTH_INTERVAL/2)
         self._test_run_latest(mock_time=mock_time)
-        self.assertNotEqual(1, mock_time.sleep_interval)
+        self.assertEqual(1, mock_time.sleep_interval)
 
     def test_run_latest_defaults_to_current(self):
         self.assertEqual(None, self.update_handler.get_latest_agent())
@@ -1340,15 +1340,6 @@ class TestUpdate(UpdateTestCase):
 
     def test_upgrade_available_returns_true_on_first_use(self):
         self.assertTrue(self._test_upgrade_available())
-
-    def test_upgrade_available_will_refresh_goal_state(self):
-        protocol = self._create_protocol()
-        protocol.emulate_stale_goal_state()
-        self.assertTrue(self._test_upgrade_available(protocol=protocol))
-        self.assertEqual(2, protocol.call_counts["get_vmagent_manifests"])
-        self.assertEqual(1, protocol.call_counts["get_vmagent_pkgs"])
-        self.assertEqual(1, protocol.call_counts["update_goal_state"])
-        self.assertTrue(protocol.goal_state_forced)
 
     def test_upgrade_available_handles_missing_family(self):
         extensions_config = ExtensionsConfig(load_data("wire/ext_conf_missing_family.xml"))
@@ -1676,7 +1667,6 @@ class ProtocolMock(object):
             "update_goal_state" : 0
         }
         self.goal_state_is_stale = False
-        self.goal_state_forced = False
         self.etag = etag
         self.versions = versions if versions is not None else []
         self.create_manifests()
@@ -1726,9 +1716,8 @@ class ProtocolMock(object):
             raise ResourceGoneError()
         return self.agent_packages
 
-    def update_goal_state(self, forced=False, max_retry=3):
+    def update_goal_state(self, forced=False):
         self.call_counts["update_goal_state"] += 1
-        self.goal_state_forced = self.goal_state_forced or forced
 
 
 class ResponseMock(Mock):

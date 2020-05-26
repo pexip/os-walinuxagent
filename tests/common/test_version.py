@@ -17,14 +17,15 @@
 
 from __future__ import print_function
 
+import mock
+import os
 import textwrap
 
-import mock
-
+import azurelinuxagent.common.conf as conf
 from azurelinuxagent.common.version import set_current_agent, \
     AGENT_LONG_VERSION, AGENT_VERSION, AGENT_NAME, AGENT_NAME_PATTERN, \
     get_f5_platform, get_distro
-from tests.tools import *
+from tests.tools import AgentTestCase, open_patch, patch
 
 
 def freebsd_system():
@@ -49,6 +50,7 @@ def default_system():
 
 def default_system_no_linux_distro():
     return '', '', ''
+
 
 def default_system_exception():
     raise Exception

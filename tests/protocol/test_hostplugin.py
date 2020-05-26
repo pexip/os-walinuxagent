@@ -19,6 +19,7 @@ import base64
 import json
 import sys
 import datetime
+import unittest
 
 import azurelinuxagent.common.protocol.restapi as restapi
 import azurelinuxagent.common.protocol.wire as wire
@@ -31,7 +32,7 @@ from azurelinuxagent.common.protocol.hostplugin import API_VERSION
 from azurelinuxagent.common.utils import restutil
 from tests.protocol.mockwiredata import WireProtocolData, DATA_FILE
 from tests.protocol.test_wire import MockResponse
-from tests.tools import *
+from tests.tools import AgentTestCase, PY_VERSION_MAJOR, Mock, patch
 
 if sys.version_info[0] == 3:
     import http.client as httpclient
@@ -76,7 +77,25 @@ class TestHostPlugin(AgentTestCase):
         status_blob.vm_status = restapi.VMStatus(message="Ready", status="Ready")
         return status_blob
 
+    def _relax_timestamp(self, headers):
+        new_headers = []
+
+        for header in headers:
+            header_value = header['headerValue']
+            if header['headerName'] == 'x-ms-date':
+                timestamp = header['headerValue']
+                header_value = timestamp[:timestamp.rfind(":")]
+
+            new_header = {header['headerName']: header_value}
+            new_headers.append(new_header)
+
+        return new_headers
+
     def _compare_data(self, actual, expected):
+        # Remove seconds from the timestamps for testing purposes, that level or granularity introduces test flakiness
+        actual['headers'] = self._relax_timestamp(actual['headers'])
+        expected['headers'] = self._relax_timestamp(expected['headers'])
+
         for k in iter(expected.keys()):
             if k == 'content' or k == 'requestUri':
                 if actual[k] != expected[k]:
@@ -286,7 +305,8 @@ class TestHostPlugin(AgentTestCase):
     @patch("azurelinuxagent.common.protocol.hostplugin.HostPluginProtocol._put_page_blob_status",
            side_effect=ResourceGoneError("410"))
     @patch("azurelinuxagent.common.protocol.wire.WireClient.update_goal_state")
-    def test_fallback_channel_410(self, patch_update, patch_put, patch_upload, _):
+    @patch("azurelinuxagent.common.protocol.wire.WireClient.update_host_plugin_from_goal_state")
+    def test_fallback_channel_410(self, patch_refresh_host_plugin, patch_update, patch_put, patch_upload, _):
         """
         When host plugin returns a 410, we should force the goal state update and return
         """
@@ -309,10 +329,10 @@ class TestHostPlugin(AgentTestCase):
         # assert host plugin route is called
         self.assertEqual(1, patch_put.call_count, "Host plugin was not used")
 
-        # assert update goal state is called twice, forced=True on the second
-        self.assertEqual(2, patch_update.call_count, "Update goal state unexpected call count")
-        self.assertEqual(1, len(patch_update.call_args[1]), "Update goal state unexpected call count")
-        self.assertTrue(patch_update.call_args[1]['forced'], "Update goal state unexpected call count")
+        # assert update goal state is called with no arguments (forced=False), then update_host_plugin_from_goal_state is called
+        self.assertEqual(1, patch_update.call_count, "Update goal state unexpected call count")
+        self.assertEqual(0, len(patch_update.call_args[1]), "Update goal state unexpected argument count")
+        self.assertEqual(1, patch_refresh_host_plugin.call_count, "Refresh host plugin unexpected call count")
 
         # ensure the correct url is used
         self.assertEqual(sas_url, patch_put.call_args[0][0])
@@ -660,11 +680,8 @@ class TestHostPlugin(AgentTestCase):
         # put status blob
         patch_http_put.return_value = MockResponse(None, 500)
 
-        if sys.version_info < (2, 7):
-            self.assertRaises(HttpError, host_plugin.put_vm_status, status_blob, sas_url)
-        else:
-            with self.assertRaises(HttpError):
-                host_plugin.put_vm_status(status_blob=status_blob, sas_url=sas_url)
+        with self.assertRaises(HttpError):
+            host_plugin.put_vm_status(status_blob=status_blob, sas_url=sas_url)
 
         self.assertEqual(1, patch_http_get.call_count)
         self.assertEqual(hostplugin_versions_url, patch_http_get.call_args[0][0])
@@ -703,11 +720,8 @@ class TestHostPlugin(AgentTestCase):
 
         host_plugin.status_error_state.is_triggered = Mock(return_value=True)
 
-        if sys.version_info < (2, 7):
-            self.assertRaises(HttpError, host_plugin.put_vm_status, status_blob, sas_url)
-        else:
-            with self.assertRaises(HttpError):
-                host_plugin.put_vm_status(status_blob=status_blob, sas_url=sas_url)
+        with self.assertRaises(HttpError):
+            host_plugin.put_vm_status(status_blob=status_blob, sas_url=sas_url)
 
         self.assertEqual(1, patch_http_get.call_count)
         self.assertEqual(hostplugin_versions_url, patch_http_get.call_args[0][0])
