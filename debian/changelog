@@ -1,3 +1,9 @@
+walinuxagent (2.2.46-0pexip1) pexip; urgency=low
+
+  * New upstream release
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 26 May 2020 12:47:29 +0100
+
 walinuxagent (2.2.32-0pexip4) pexip; urgency=low
 
   * Apply fix for CVE-2019-0804 from Debian
