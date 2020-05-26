@@ -4,3 +4,6 @@ class PexOSDeprovisionHandler(object):
 
     def run(self, force=False, deluser=False):
         return
+
+    def run_changed_unique_id(self):
+        return

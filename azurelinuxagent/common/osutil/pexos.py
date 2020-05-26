@@ -5,7 +5,11 @@ class PexOSUtil(object):
     def __init__(self):
         self._default = DefaultOSUtil()
         self.jit_enabled = False # ga/remoteaccess.py
+        self.service_name = self.get_service_name()
 
+    @staticmethod
+    def get_service_name():
+        return "walinuxagent"
 
     def get_agent_conf_file_path(self):
         # agent.py
@@ -24,14 +28,19 @@ class PexOSUtil(object):
         pass
 
 
-    def is_cgroups_supported(self):
+    @staticmethod
+    def is_cgroups_supported():
         # common/cgroups.py
         return False
+
+    def get_total_cpu_ticks_since_boot(self):
+        # common/cgroup.py
+        return self._default.get_total_cpu_ticks_since_boot()
 
 
     def is_dhcp_available(self):
         # common/dhcp.py common/protocol/util.py
-        return (False, '')
+        return False
 
 
     def check_pid_alive(self, pid):
@@ -46,7 +55,7 @@ class PexOSUtil(object):
 
     def get_dhcp_pid(self):
         # ga/env.py
-        return None
+        return []
 
     def get_hostname_record(self):
         # ga/env.py
@@ -61,11 +70,13 @@ class PexOSUtil(object):
         # ga/monitor.py
         return 0
 
-    def read_route_table(self):
+    @staticmethod
+    def read_route_table():
         # ga/monitor.py
         return []
 
-    def get_list_of_routes(self, route_table):
+    @staticmethod
+    def get_list_of_routes(route_table):
         # ga/monitor.py
         return []
 
