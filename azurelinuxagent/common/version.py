@@ -1,4 +1,4 @@
-# Copyright 2018 Microsoft Corporation
+# Copyright 2019 Microsoft Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ def get_distro():
 
 AGENT_NAME = "WALinuxAgent"
 AGENT_LONG_NAME = "Azure Linux Agent"
-AGENT_VERSION = '2.2.32'
+AGENT_VERSION = '2.2.46'
 AGENT_LONG_VERSION = "{0}-{1}".format(AGENT_NAME, AGENT_VERSION)
 AGENT_DESCRIPTION = """
 The Azure Linux Agent supports the provisioning and running of Linux
@@ -134,6 +134,9 @@ AGENT_PATTERN = "{0}-(.*)".format(AGENT_NAME)
 AGENT_NAME_PATTERN = re.compile(AGENT_PATTERN)
 AGENT_PKG_PATTERN = re.compile(AGENT_PATTERN+"\.zip")
 AGENT_DIR_PATTERN = re.compile(".*/{0}".format(AGENT_PATTERN))
+
+# The execution mode of the VM - IAAS or PAAS. Linux VMs are only executed in IAAS mode.
+AGENT_EXECUTION_MODE = "IAAS"
 
 EXT_HANDLER_PATTERN = b".*/WALinuxAgent-(\d+.\d+.\d+[.\d+]*).*-run-exthandlers"
 EXT_HANDLER_REGEX = re.compile(EXT_HANDLER_PATTERN)

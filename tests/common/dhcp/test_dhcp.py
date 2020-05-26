@@ -17,10 +17,17 @@
 
 import azurelinuxagent.common.dhcp as dhcp
 import azurelinuxagent.common.osutil.default as osutil
-from tests.tools import *
+from tests.tools import AgentTestCase, open_patch, patch
 
 
 class TestDHCP(AgentTestCase):
+
+    def setUp(self):
+        AgentTestCase.setUp(self)
+
+    def tearDown(self):
+        AgentTestCase.tearDown(self)
+
     def test_wireserver_route_exists(self):
         # setup
         dhcp_handler = dhcp.get_dhcp_handler()

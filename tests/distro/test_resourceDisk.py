@@ -18,11 +18,13 @@
 # http://msdn.microsoft.com/en-us/library/cc227282%28PROT.10%29.aspx
 # http://msdn.microsoft.com/en-us/library/cc227259%28PROT.13%29.aspx
 
-import sys
+import os
 import stat
+import sys
+import unittest
 from azurelinuxagent.common.utils import shellutil
 from azurelinuxagent.daemon.resourcedisk import get_resourcedisk_handler
-from tests.tools import *
+from tests.tools import AgentTestCase, patch
 
 
 class TestResourceDisk(AgentTestCase):
@@ -40,7 +42,8 @@ class TestResourceDisk(AgentTestCase):
         assert os.path.exists(test_file)
 
         # only the owner should have access
-        mode = os.stat(test_file).st_mode & (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+        mode = os.stat(test_file).st_mode & (
+            stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
         assert mode == stat.S_IRUSR | stat.S_IWUSR
 
         # cleanup
@@ -54,7 +57,7 @@ class TestResourceDisk(AgentTestCase):
             file_size = 1024 * 128
 
             # execute
-            if sys.version_info >= (3,3):
+            if sys.version_info >= (3, 3):
                 with patch("os.posix_fallocate",
                            side_effect=Exception('failure')):
                     get_resourcedisk_handler().mkfile(test_file, file_size)
@@ -81,20 +84,20 @@ class TestResourceDisk(AgentTestCase):
             resource_disk_handler.mkfile(test_file, file_size)
 
             # assert
-            if sys.version_info >= (3,3):
+            if sys.version_info >= (3, 3):
                 with patch("os.posix_fallocate") as posix_fallocate:
                     self.assertEqual(0, posix_fallocate.call_count)
 
             assert run_patch.call_count == 1
             assert "dd if" in run_patch.call_args_list[0][0][0]
 
-
     def test_change_partition_type(self):
         resource_handler = get_resourcedisk_handler()
         # test when sfdisk --part-type does not exist
         with patch.object(shellutil, "run_get_output",
                           side_effect=[[1, ''], [0, '']]) as run_patch:
-            resource_handler.change_partition_type(suppress_message=True, option_str='')
+            resource_handler.change_partition_type(
+                suppress_message=True, option_str='')
 
             # assert
             assert run_patch.call_count == 2
@@ -104,7 +107,8 @@ class TestResourceDisk(AgentTestCase):
         # test when sfdisk --part-type exists
         with patch.object(shellutil, "run_get_output",
                           side_effect=[[0, '']]) as run_patch:
-            resource_handler.change_partition_type(suppress_message=True, option_str='')
+            resource_handler.change_partition_type(
+                suppress_message=True, option_str='')
 
             # assert
             assert run_patch.call_count == 1
@@ -117,9 +121,10 @@ class TestResourceDisk(AgentTestCase):
             os.remove(test_file)
 
         with open(test_file, "wb") as file:
-            file.write(bytes(file_size))
+            file.write(bytearray(file_size))
 
-        os.chmod(test_file,  stat.S_ISUID | stat.S_ISGID | stat.S_IRUSR | stat.S_IWUSR | stat.S_IRWXG | stat.S_IRWXO)  # 0o6677
+        os.chmod(test_file, stat.S_ISUID | stat.S_ISGID | stat.S_IRUSR |
+                 stat.S_IWUSR | stat.S_IRWXG | stat.S_IRWXO)  # 0o6677
 
         def swap_on(_):   # mimic the output of "swapon -s"
             return [
@@ -128,10 +133,12 @@ class TestResourceDisk(AgentTestCase):
             ]
 
         with patch.object(shellutil, "run_get_output", side_effect=swap_on):
-            get_resourcedisk_handler().check_existing_swap_file(test_file, test_file, file_size)
+            get_resourcedisk_handler().check_existing_swap_file(
+                test_file, test_file, file_size)
 
         # it should remove access from group, others
-        mode = os.stat(test_file).st_mode & (stat.S_ISUID | stat.S_ISGID | stat.S_IRWXU | stat.S_IWUSR | stat.S_IRWXG | stat.S_IRWXO)  # 0o6777
+        mode = os.stat(test_file).st_mode & (stat.S_ISUID | stat.S_ISGID |
+                                             stat.S_IRWXU | stat.S_IWUSR | stat.S_IRWXG | stat.S_IRWXO)  # 0o6777
         assert mode == stat.S_ISUID | stat.S_ISGID | stat.S_IRUSR | stat.S_IWUSR  # 0o6600
 
         os.remove(test_file)

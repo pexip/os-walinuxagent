@@ -23,22 +23,28 @@ import os
 import pprint
 import re
 import shutil
+import stat
+import sys
 import tempfile
 import unittest
 from functools import wraps
 
 import time
 
+from azurelinuxagent.common.cgroupconfigurator import CGroupConfigurator
 import azurelinuxagent.common.event as event
 import azurelinuxagent.common.conf as conf
 import azurelinuxagent.common.logger as logger
+from azurelinuxagent.common.osutil.factory import _get_osutil
+from azurelinuxagent.common.osutil.ubuntu import Ubuntu14OSUtil, Ubuntu16OSUtil
 from azurelinuxagent.common.utils import fileutil
-
 from azurelinuxagent.common.version import PY_VERSION_MAJOR
 
-# Import mock module for Python2 and Python3
 try:
     from unittest.mock import Mock, patch, MagicMock, ANY, DEFAULT, call, mock_open
+
+    # Import mock module for Python2 and Python3
+    from bin.waagent2 import Agent
 except ImportError:
     from mock import Mock, patch, MagicMock, ANY, DEFAULT, call, mock_open
 
@@ -54,14 +60,21 @@ if debug:
     logger.add_logger_appender(logger.AppenderType.STDOUT, 
                                logger.LogLevel.VERBOSE)
 
-
-def _do_nothing():
-    pass
-
-
 _MAX_LENGTH = 120
 
 _MAX_LENGTH_SAFE_REPR = 80
+
+# Mock sleep to reduce test execution time
+_SLEEP = time.sleep
+
+
+def mock_sleep(sec=0.01):
+    """
+    Mocks the time.sleep method to reduce unit test time
+    :param sec: Time to replace the sleep call with, default = 0.01sec
+    """
+    _SLEEP(sec)
+
 
 def safe_repr(obj, short=False):
     try:
@@ -102,23 +115,80 @@ def _safe_repr(obj, short=False):
     return result[:_MAX_LENGTH] + ' [truncated]...'
 
 
+def running_under_travis():
+    return 'TRAVIS' in os.environ and os.environ['TRAVIS'] == 'true'
+
+
+def get_osutil_for_travis():
+    distro_name = os.environ['_system_name'].lower()
+    distro_version = os.environ['_system_version']
+
+    if distro_name == "ubuntu" and distro_version == "14.04":
+        return Ubuntu14OSUtil()
+
+    if distro_name == "ubuntu" and distro_version == "16.04":
+        return Ubuntu16OSUtil()
+
+
+def mock_get_osutil(*args):
+    # It's a known issue that calling platform.linux_distribution() in Travis will result in the wrong info.
+    # See https://github.com/travis-ci/travis-ci/issues/2755
+    # When running in Travis, use manual distro resolution that relies on environment variables.
+    if running_under_travis():
+        return get_osutil_for_travis()
+    else:
+        return _get_osutil(*args)
+
+
+def are_cgroups_enabled():
+    # We use a function decorator to check if cgroups are enabled in multiple tests, which at some point calls
+    # get_osutil. The global mock for that function doesn't get executed before the function decorators are imported,
+    # so we need to specifically mock it beforehand.
+    mock__get_osutil = patch("azurelinuxagent.common.osutil.factory._get_osutil", mock_get_osutil)
+    mock__get_osutil.start()
+    ret = CGroupConfigurator.get_instance().enabled
+    mock__get_osutil.stop()
+    return ret
+
+
+def is_trusty_in_travis():
+    # In Travis, Trusty (Ubuntu 14.04) is missing the cpuacct.stat file,
+    # possibly because the accounting is not enabled by default.
+    if not running_under_travis():
+        return False
+
+    return type(get_osutil_for_travis()) == Ubuntu14OSUtil
+
+
+def is_systemd_present():
+    return os.path.exists("/run/systemd/system")
+
+
+def i_am_root():
+    return os.geteuid() == 0
+
+
 class AgentTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Setup newer unittest assertions missing in prior versions of Python
 
         if not hasattr(cls, "assertRegex"):
-            cls.assertRegex = cls.assertRegexpMatches if hasattr(cls, "assertRegexpMatches") else _do_nothing
+            cls.assertRegex = cls.assertRegexpMatches if hasattr(cls, "assertRegexpMatches") else cls.emulate_assertRegexpMatches
         if not hasattr(cls, "assertNotRegex"):
-            cls.assertNotRegex = cls.assertNotRegexpMatches if hasattr(cls, "assertNotRegexpMatches") else _do_nothing
+            cls.assertNotRegex = cls.assertNotRegexpMatches if hasattr(cls, "assertNotRegexpMatches") else cls.emulate_assertNotRegexpMatches
         if not hasattr(cls, "assertIn"):
             cls.assertIn = cls.emulate_assertIn
         if not hasattr(cls, "assertNotIn"):
             cls.assertNotIn = cls.emulate_assertNotIn
         if not hasattr(cls, "assertGreater"):
             cls.assertGreater = cls.emulate_assertGreater
+        if not hasattr(cls, "assertGreaterEqual"):
+            cls.assertGreaterEqual = cls.emulate_assertGreaterEqual
         if not hasattr(cls, "assertLess"):
             cls.assertLess = cls.emulate_assertLess
+        if not hasattr(cls, "assertLessEqual"):
+            cls.assertLessEqual = cls.emulate_assertLessEqual
         if not hasattr(cls, "assertIsNone"):
             cls.assertIsNone = cls.emulate_assertIsNone
         if not hasattr(cls, "assertIsNotNone"):
@@ -129,6 +199,17 @@ class AgentTestCase(unittest.TestCase):
             cls.assertRaisesRegex = cls.emulate_raises_regex
         if not hasattr(cls, "assertListEqual"):
             cls.assertListEqual = cls.emulate_assertListEqual
+        if not hasattr(cls, "assertIsInstance"):
+            cls.assertIsInstance = cls.emulate_assertIsInstance
+        if sys.version_info < (2, 7):
+            # assertRaises does not implement a context manager in 2.6; override it with emulate_assertRaises but
+            # keep a pointer to the original implementation to use when a context manager is not requested.
+            cls.original_assertRaises = unittest.TestCase.assertRaises
+            cls.assertRaises = cls.emulate_assertRaises
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
     def setUp(self):
         prefix = "{0}_".format(self.__class__.__name__)
@@ -147,9 +228,14 @@ class AgentTestCase(unittest.TestCase):
         event.init_event_status(self.tmp_dir)
         event.init_event_logger(self.tmp_dir)
 
+        self.mock__get_osutil = patch("azurelinuxagent.common.osutil.factory._get_osutil", mock_get_osutil)
+        self.mock__get_osutil.start()
+
     def tearDown(self):
         if not debug and self.tmp_dir is not None:
             shutil.rmtree(self.tmp_dir)
+
+        self.mock__get_osutil.stop()
 
     def emulate_assertIn(self, a, b, msg=None):
         if a not in b:
@@ -166,9 +252,19 @@ class AgentTestCase(unittest.TestCase):
             msg = msg if msg is not None else '{0} not greater than {1}'.format(_safe_repr(a), _safe_repr(b))
             self.fail(msg)
 
+    def emulate_assertGreaterEqual(self, a, b, msg=None):
+        if not a >= b:
+            msg = msg if msg is not None else '{0} not greater or equal to {1}'.format(_safe_repr(a), _safe_repr(b))
+            self.fail(msg)
+
     def emulate_assertLess(self, a, b, msg=None):
         if not a < b:
             msg = msg if msg is not None else '{0} not less than {1}'.format(_safe_repr(a), _safe_repr(b))
+            self.fail(msg)
+
+    def emulate_assertLessEqual(self, a, b, msg=None):
+        if not a <= b:
+            msg = msg if msg is not None else '{0} not less or equal to {1}'.format(_safe_repr(a), _safe_repr(b))
             self.fail(msg)
 
     def emulate_assertIsNone(self, x, msg=None):
@@ -181,6 +277,50 @@ class AgentTestCase(unittest.TestCase):
             msg = msg if msg is not None else '{0} is None'.format(_safe_repr(x))
             self.fail(msg)
 
+    def emulate_assertRegexpMatches(self, text, regexp, msg=None):
+        if re.search(regexp, text) is not None:
+            return
+        msg = msg if msg is not None else "'{0}' does not match '{1}'.".format(text, regexp)
+        self.fail(msg)
+
+    def emulate_assertNotRegexpMatches(self, text, regexp, msg=None):
+        if re.search(regexp, text, flags=1) is None:
+            return
+        msg = msg if msg is not None else "'{0}' should not match '{1}'.".format(text, regexp)
+        self.fail(msg)
+
+    class _AssertRaisesContextManager(object):
+        def __init__(self, expected_exception_type, test_case):
+            self._expected_exception_type = expected_exception_type
+            self._test_case = test_case
+
+        def __enter__(self):
+            return self
+
+        @staticmethod
+        def _get_type_name(type):
+            return type.__name__ if hasattr(type, "__name__") else str(type)
+
+        def __exit__(self, exception_type, exception, *_):
+            if exception_type is None:
+                expected = AgentTestCase._AssertRaisesContextManager._get_type_name(self._expected_exception_type)
+                self._test_case.fail("Did not raise an exception; expected '{0}'".format(expected))
+            if not issubclass(exception_type, self._expected_exception_type):
+                raised = AgentTestCase._AssertRaisesContextManager._get_type_name(exception_type)
+                expected = AgentTestCase._AssertRaisesContextManager._get_type_name(self._expected_exception_type)
+                self._test_case.fail("Raised '{0}', but expected '{1}'".format(raised, expected))
+
+            self.exception = exception
+            return True
+
+    def emulate_assertRaises(self, exception_type, function=None, *args, **kwargs):
+        # return a context manager only when function is not provided; otherwise use the original assertRaises
+        if function is None:
+            return AgentTestCase._AssertRaisesContextManager(exception_type, self)
+
+        self.original_assertRaises(exception_type, function, *args, **kwargs)
+
+        return None
 
     def emulate_raises_regex(self, exception_type, regex, function, *args, **kwargs):
         try:
@@ -296,12 +436,45 @@ class AgentTestCase(unittest.TestCase):
         msg = self._formatMessage(msg, standardMsg)
         self.fail(msg)
 
+    def emulate_assertIsInstance(self, obj, object_type, msg=None):
+        if not isinstance(obj, object_type):
+            msg = msg if msg is not None else '{0} is not an instance of {1}'.format(_safe_repr(obj),
+                                                                                     _safe_repr(object_type))
+            self.fail(msg)
+
     @staticmethod
     def _create_files(tmp_dir, prefix, suffix, count, with_sleep=0):
         for i in range(count):
             f = os.path.join(tmp_dir, '.'.join((prefix, str(i), suffix)))
             fileutil.write_file(f, "faux content")
             time.sleep(with_sleep)
+
+    def create_script(self, file_name, contents, file_path=None):
+        """
+        Creates an executable script with the given contents.
+        If file_name ends with ".py", it creates a Python3 script, otherwise it creates a bash script
+        :param file_name: The name of the file to create the script with
+        :param contents: Contents of the script file
+        :param file_path: The path of the file where to create it in (we use /tmp/ by default)
+        :return:
+        """
+        if not file_path:
+            file_path = os.path.join(self.tmp_dir, file_name)
+
+        directory = os.path.dirname(file_path)
+        if not os.path.exists(directory):
+            os.mkdir(directory)
+
+        with open(file_path, "w") as script:
+            if file_name.endswith(".py"):
+                script.write("#!/usr/bin/env python3\n")
+            else:
+                script.write("#!/usr/bin/env bash\n")
+            script.write(contents)
+
+        os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+
+        return file_name
 
 
 def load_data(name):
