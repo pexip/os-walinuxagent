@@ -1,3 +1,9 @@
+walinuxagent (2.2.46-0pexip2) pexip; urgency=medium
+
+  * Rebuild in buster environment
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Thu, 16 Jul 2020 07:38:26 +0000
+
 walinuxagent (2.2.46-0pexip1) pexip; urgency=low
 
   * New upstream release
