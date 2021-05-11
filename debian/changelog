@@ -1,6 +1,7 @@
 walinuxagent (2.2.46-0pexip3) pexip; urgency=low
 
   * Rebuild against Python3 with working platform.linux_distribution()
+  * Ensure injected WireServerEndpoint address is used
 
  -- John-Mark Bell <jmb@pexip.com>  Tue, 11 May 2021 17:29:52 +0100
 
