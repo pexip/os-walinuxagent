@@ -1,3 +1,9 @@
+walinuxagent (2.2.46-0pexip4) pexip; urgency=medium
+
+  * Initial bullseye build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 02 Jun 2022 14:43:02 +0100
+
 walinuxagent (2.2.46-0pexip3) pexip; urgency=low
 
   * Rebuild against Python3 with working platform.linux_distribution()
