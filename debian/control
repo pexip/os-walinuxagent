@@ -6,7 +6,6 @@ XSBC-Pexip-Original-Maintainer: Ben Howard <ben.howard@ubuntu.com>
 XSBC-Original-Maintainer: Microsoft Corporation <walinuxagent@microsoft.com>
 Build-Depends: debhelper (>= 9),
                dh-python,
-               dh-systemd,
                openssl,
                python3,
                python3-nose,
