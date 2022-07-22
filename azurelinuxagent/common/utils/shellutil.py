@@ -87,6 +87,7 @@ def run_get_output(cmd, chk_err=True, log_cmd=True, expected_errors=[]):
         logger.verbose(u"Command: [{0}]", cmd)
     try:
         output = subprocess.check_output(cmd,
+                                         stderr=subprocess.STDOUT,
                                          shell=True)
         output = _encode_command_output(output)
     except subprocess.CalledProcessError as e:

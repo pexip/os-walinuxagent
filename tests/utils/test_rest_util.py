@@ -177,7 +177,6 @@ class TestHttpOperations(AgentTestCase):
         for x in urls_tuples:
             self.assertEquals(restutil.redact_sas_tokens_in_urls(x[0]), x[1])
 
-    @skip_if_predicate_true(lambda: os.environ.get('https_proxy') is not None, "Skip if proxy is defined")
     @patch('azurelinuxagent.common.conf.get_httpproxy_port')
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
     def test_get_http_proxy_none_is_default(self, mock_host, mock_port):
@@ -198,7 +197,6 @@ class TestHttpOperations(AgentTestCase):
         self.assertEqual(1, mock_host.call_count)
         self.assertEqual(1, mock_port.call_count)
 
-    @skip_if_predicate_true(lambda: os.environ.get('https_proxy') is not None, "Skip if proxy is defined")
     @patch('azurelinuxagent.common.conf.get_httpproxy_port')
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
     def test_get_http_proxy_configuration_requires_host(self, mock_host, mock_port):

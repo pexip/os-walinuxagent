@@ -148,9 +148,6 @@ class UpdateHandler(object):
         if child_args is not None:
             agent_cmd = "{0} {1}".format(agent_cmd, child_args)
 
-        env = os.environ.copy()
-        env['PYTHONDONTWRITEBYTECODE'] = '1'
-
         try:
 
             # Launch the correct Python version for python-based agents
@@ -166,7 +163,7 @@ class UpdateHandler(object):
                 cwd=agent_dir,
                 stdout=sys.stdout,
                 stderr=sys.stderr,
-                env=env)
+                env=os.environ)
 
             logger.verbose(u"Agent {0} launched with command '{1}'", agent_name, agent_cmd)
 
@@ -662,6 +659,7 @@ class UpdateHandler(object):
 
         # Ignore new agents if updating is disabled
         if not conf.get_autoupdate_enabled():
+            logger.warn(u"Agent auto-update is disabled.")
             return False
 
         now = time.time()

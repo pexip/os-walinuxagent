@@ -1124,7 +1124,6 @@ class TestUpdate(UpdateTestCase):
         self._test_run_latest(mock_time=mock_time)
         self.assertEqual(1, mock_time.sleep_interval)
 
-    @unittest.expectedFailure
     def test_run_latest_defaults_to_current(self):
         self.assertEqual(None, self.update_handler.get_latest_agent())
 

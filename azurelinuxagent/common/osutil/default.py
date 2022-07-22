@@ -423,9 +423,9 @@ class DefaultOSUtil(object):
             return
 
         if expiration is not None:
-            cmd = "useradd -m {0} -s /bin/bash -e {1}".format(username, expiration)
+            cmd = "useradd -m {0} -e {1}".format(username, expiration)
         else:
-            cmd = "useradd -m {0} -s /bin/bash".format(username)
+            cmd = "useradd -m {0}".format(username)
         
         if comment is not None:
             cmd += " -c {0}".format(comment)

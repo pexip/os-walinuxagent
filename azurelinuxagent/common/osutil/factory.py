@@ -22,7 +22,7 @@ from .default import DefaultOSUtil
 from .arch import ArchUtil
 from .clearlinux import ClearLinuxUtil
 from .coreos import CoreOSUtil
-from .debian import DebianOSModernUtil
+from .debian import DebianOSBaseUtil, DebianOSModernUtil
 from .freebsd import FreeBSDOSUtil
 from .openbsd import OpenBSDOSUtil
 from .redhat import RedhatOSUtil, Redhat6xOSUtil
@@ -90,7 +90,10 @@ def _get_osutil(distro_name, distro_code_name, distro_version, distro_full_name)
             return SUSEOSUtil()
 
     if distro_name == "debian":
-        return DebianOSModernUtil()
+        if "sid" in distro_version or Version(distro_version) > Version("7"):
+            return DebianOSModernUtil()
+        else:
+            return DebianOSBaseUtil()
 
     if distro_name == "redhat" \
             or distro_name == "centos" \
