@@ -787,7 +787,7 @@ class TestUpdate(UpdateTestCase):
         for path in test_files:
             mode = os.stat(path).st_mode
             mode &= (stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-            self.assertEqual(0, mode ^ (stat.S_IRUSR | stat.S_IWUSR))
+            self.assertEqual(0, mode ^ stat.S_IRUSR)
 
     def test_ensure_readonly_leaves_unmodified(self):
         test_files = [
@@ -1124,12 +1124,13 @@ class TestUpdate(UpdateTestCase):
         self._test_run_latest(mock_time=mock_time)
         self.assertEqual(1, mock_time.sleep_interval)
 
+    @unittest.expectedFailure
     def test_run_latest_defaults_to_current(self):
         self.assertEqual(None, self.update_handler.get_latest_agent())
 
         args, kwargs = self._test_run_latest()
 
-        self.assertEqual(' '.join(args[0]), ' '.join([get_python_cmd(), "-u", sys.argv[0], "-run-exthandlers"]))
+        self.assertEqual(args[0], [get_python_cmd(), "-u", sys.argv[0], "-run-exthandlers"])
         self.assertEqual(True, 'cwd' in kwargs)
         self.assertEqual(os.getcwd(), kwargs['cwd'])
 

@@ -15,9 +15,10 @@
 # Requires Python 2.6+ and Openssl 1.0+
 #
 
+import mock
 import azurelinuxagent.common.dhcp as dhcp
 import azurelinuxagent.common.osutil.default as osutil
-from tests.tools import AgentTestCase, mock_open, open_patch, patch
+from tests.tools import AgentTestCase, open_patch, patch
 
 
 class TestDHCP(AgentTestCase):
@@ -31,7 +32,6 @@ class TestDHCP(AgentTestCase):
     def test_wireserver_route_exists(self):
         # setup
         dhcp_handler = dhcp.get_dhcp_handler()
-        dhcp_handler.osutil = osutil.DefaultOSUtil()
         self.assertTrue(dhcp_handler.endpoint is None)
         self.assertTrue(dhcp_handler.routes is None)
         self.assertTrue(dhcp_handler.gateway is None)
@@ -48,7 +48,7 @@ class TestDHCP(AgentTestCase):
                         "00FCFFFF	0	0	0   \n"
 
         with patch("os.path.exists", return_value=True):
-            mo = mock_open(read_data=routing_table)
+            mo = mock.mock_open(read_data=routing_table)
             with patch(open_patch(), mo):
                 self.assertTrue(dhcp_handler.wireserver_route_exists)
 

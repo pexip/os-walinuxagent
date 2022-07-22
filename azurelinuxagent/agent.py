@@ -49,10 +49,6 @@ class Agent(object):
         self.conf_file_path = conf_file_path
         self.osutil = get_osutil()
 
-        #Init stdout log
-        level = logger.LogLevel.VERBOSE if verbose else logger.LogLevel.INFO
-        logger.add_logger_appender(logger.AppenderType.STDOUT, level)
-
         #Init config
         conf_file_path = self.conf_file_path \
                 if self.conf_file_path is not None \
@@ -146,6 +142,11 @@ class Agent(object):
         update_handler = get_update_handler()
         update_handler.run(debug)
 
+    def resourcedisk(self):
+        from azurelinuxagent.daemon.resourcedisk import get_resourcedisk_handler
+        resourcedisk_handler = get_resourcedisk_handler()
+        resourcedisk_handler.run()
+
     def show_configuration(self):
         configuration = conf.get_configuration()
         for k in sorted(configuration.keys()):
@@ -160,6 +161,11 @@ def main(args=[]):
     if len(args) <= 0:
         args = sys.argv[1:]
     command, force, verbose, debug, conf_file_path = parse_args(args)
+
+    #Init stdout log
+    level = logger.LogLevel.VERBOSE if verbose else logger.LogLevel.INFO
+    logger.add_logger_appender(logger.AppenderType.STDOUT, level)
+
     if command == "version":
         version()
     elif command == "help":
@@ -181,6 +187,8 @@ def main(args=[]):
                 agent.daemon()
             elif command == "run-exthandlers":
                 agent.run_exthandlers(debug)
+            elif command == "resourcedisk":
+                agent.resourcedisk()
             elif command == "show-configuration":
                 agent.show_configuration()
         except Exception:
@@ -211,6 +219,8 @@ def parse_args(sys_args):
             cmd = "deprovision+user"
         elif re.match("^([-/]*)deprovision", a):
             cmd = "deprovision"
+        elif re.match("^([-/]*)provision", a):
+            cmd = "provision"
         elif re.match("^([-/]*)daemon", a):
             cmd = "daemon"
         elif re.match("^([-/]*)start", a):
@@ -219,6 +229,8 @@ def parse_args(sys_args):
             cmd = "register-service"
         elif re.match("^([-/]*)run-exthandlers", a):
             cmd = "run-exthandlers"
+        elif re.match("^([-/]*)resourcedisk", a):
+            cmd = "resourcedisk"
         elif re.match("^([-/]*)version", a):
             cmd = "version"
         elif re.match("^([-/]*)verbose", a):
@@ -257,8 +269,8 @@ def usage():
     s  = "\n"
     s += ("usage: {0} [-verbose] [-force] [-help] "
            "-configuration-path:<path to configuration file>"
-           "-deprovision[+user]|-register-service|-version|-daemon|-start|"
-           "-run-exthandlers|-show-configuration]"
+           "-provision|-deprovision[+user]|-register-service|-version|-daemon|-start|"
+           "-run-exthandlers||-resourcedisk-show-configuration]"
            "").format(sys.argv[0])
     s += "\n"
     return s

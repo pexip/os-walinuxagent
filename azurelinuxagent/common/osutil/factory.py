@@ -22,7 +22,7 @@ from .default import DefaultOSUtil
 from .arch import ArchUtil
 from .clearlinux import ClearLinuxUtil
 from .coreos import CoreOSUtil
-from .debian import DebianOSBaseUtil, DebianOSModernUtil
+from .debian import DebianOSModernUtil
 from .freebsd import FreeBSDOSUtil
 from .openbsd import OpenBSDOSUtil
 from .redhat import RedhatOSUtil, Redhat6xOSUtil
@@ -35,7 +35,6 @@ from .gaia import GaiaOSUtil
 from .iosxe import IosxeOSUtil
 from .nsbsd import NSBSDOSUtil
 from .openwrt import OpenWRTOSUtil
-from .pexos import PexOSUtil
 
 from distutils.version import LooseVersion as Version
 
@@ -91,10 +90,7 @@ def _get_osutil(distro_name, distro_code_name, distro_version, distro_full_name)
             return SUSEOSUtil()
 
     if distro_name == "debian":
-        if "sid" in distro_version or Version(distro_version) > Version("7"):
-            return DebianOSModernUtil()
-        else:
-            return DebianOSBaseUtil()
+        return DebianOSModernUtil()
 
     if distro_name == "redhat" \
             or distro_name == "centos" \
@@ -127,9 +123,6 @@ def _get_osutil(distro_name, distro_code_name, distro_version, distro_full_name)
 
     if distro_name == "openwrt":
         return OpenWRTOSUtil()
-
-    if distro_name == "pexos":
-        return PexOSUtil()
 
     else:
         logger.warn("Unable to load distro implementation for {0}. Using "

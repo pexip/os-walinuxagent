@@ -177,15 +177,15 @@ class TestHttpOperations(AgentTestCase):
         for x in urls_tuples:
             self.assertEquals(restutil.redact_sas_tokens_in_urls(x[0]), x[1])
 
+    @skip_if_predicate_true(lambda: os.environ.get('https_proxy') is not None, "Skip if proxy is defined")
     @patch('azurelinuxagent.common.conf.get_httpproxy_port')
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
     def test_get_http_proxy_none_is_default(self, mock_host, mock_port):
         mock_host.return_value = None
         mock_port.return_value = None
-        with patch.dict(os.environ, {}, True):
-            h, p = restutil._get_http_proxy()
-            self.assertEqual(None, h)
-            self.assertEqual(None, p)
+        h, p = restutil._get_http_proxy()
+        self.assertEqual(None, h)
+        self.assertEqual(None, p)
 
     @patch('azurelinuxagent.common.conf.get_httpproxy_port')
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
@@ -198,17 +198,17 @@ class TestHttpOperations(AgentTestCase):
         self.assertEqual(1, mock_host.call_count)
         self.assertEqual(1, mock_port.call_count)
 
+    @skip_if_predicate_true(lambda: os.environ.get('https_proxy') is not None, "Skip if proxy is defined")
     @patch('azurelinuxagent.common.conf.get_httpproxy_port')
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
     def test_get_http_proxy_configuration_requires_host(self, mock_host, mock_port):
         mock_host.return_value = None
         mock_port.return_value = None
-        with patch.dict(os.environ, {}, True):
-            h, p = restutil._get_http_proxy()
-            self.assertEqual(None, h)
-            self.assertEqual(None, p)
-            self.assertEqual(1, mock_host.call_count)
-            self.assertEqual(0, mock_port.call_count)
+        h, p = restutil._get_http_proxy()
+        self.assertEqual(None, h)
+        self.assertEqual(None, p)
+        self.assertEqual(1, mock_host.call_count)
+        self.assertEqual(0, mock_port.call_count)
 
     @patch('azurelinuxagent.common.conf.get_httpproxy_host')
     def test_get_http_proxy_http_uses_httpproxy(self, mock_host):
@@ -285,9 +285,8 @@ class TestHttpOperations(AgentTestCase):
                 self.assertEqual(i, j)
 
     def test_get_no_proxy_default(self):
-        with patch.dict(os.environ, clear=True):
-            no_proxy_generator = restutil.get_no_proxy()
-            self.assertIsNone(no_proxy_generator)
+        no_proxy_generator = restutil.get_no_proxy()
+        self.assertIsNone(no_proxy_generator)
 
     def test_is_ipv4_address(self):
         self.assertTrue(restutil.is_ipv4_address('8.8.8.8'))

@@ -148,6 +148,9 @@ class UpdateHandler(object):
         if child_args is not None:
             agent_cmd = "{0} {1}".format(agent_cmd, child_args)
 
+        env = os.environ.copy()
+        env['PYTHONDONTWRITEBYTECODE'] = '1'
+
         try:
 
             # Launch the correct Python version for python-based agents
@@ -163,7 +166,7 @@ class UpdateHandler(object):
                 cwd=agent_dir,
                 stdout=sys.stdout,
                 stderr=sys.stderr,
-                env=os.environ)
+                env=env)
 
             logger.verbose(u"Agent {0} launched with command '{1}'", agent_name, agent_cmd)
 
@@ -477,7 +480,7 @@ class UpdateHandler(object):
     def _ensure_readonly_files(self):
         for g in READONLY_FILE_GLOBS:
             for path in glob.iglob(os.path.join(conf.get_lib_dir(), g)):
-                os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
+                os.chmod(path, stat.S_IRUSR)
 
     def _ensure_cgroups_initialized(self):
         configurator = CGroupConfigurator.get_instance()
@@ -659,7 +662,6 @@ class UpdateHandler(object):
 
         # Ignore new agents if updating is disabled
         if not conf.get_autoupdate_enabled():
-            logger.warn(u"Agent auto-update is disabled.")
             return False
 
         now = time.time()
