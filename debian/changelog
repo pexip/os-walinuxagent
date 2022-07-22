@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2pexip3) pexip-bullseye; urgency=medium
+
+  * Build using python3 only.
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Fri, 22 Jul 2022 16:44:16 +0100
+
 walinuxagent (2.2.47-2pexip2) pexip-bullseye; urgency=medium
 
   * Unmangle pexip packaging
