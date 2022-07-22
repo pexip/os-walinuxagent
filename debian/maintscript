@@ -1,1 +1,0 @@
-rm_conffile /etc/init/walinuxagent.conf 2.2.32-0pexip3~ walinuxagent:amd64
