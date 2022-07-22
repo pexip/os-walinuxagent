@@ -7,7 +7,7 @@ include /usr/share/dpkg/default.mk
 export PYBUILD_INSTALL_ARGS=--install-scripts /usr/sbin
 
 %:
-	dh $@ --buildsystem pybuild
+	dh $@ --with python3 --buildsystem pybuild
 
 git-source: TAR_ORIG=$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.xz
 git-source: TAR_DEBIAN=$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM_REVISION).debian.tar.xz
@@ -46,3 +46,6 @@ override_dh_installsystemd:
 	dh_installsystemd -p walinuxagent --name waagent-apt
 	dh_installsystemd -p walinuxagent --name waagent-provision
 	dh_installsystemd -p walinuxagent --name waagent-resourcedisk
+
+override_dh_python3:
+	dh_python3 -O--buildsystem=pybuild --shebang "/usr/bin/python3"
