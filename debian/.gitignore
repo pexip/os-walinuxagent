@@ -2,5 +2,4 @@
 *.log
 *.substvars
 files
-/patches
 waagent
