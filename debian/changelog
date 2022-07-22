@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2pexip2) pexip-bullseye; urgency=medium
+
+  * Unmangle pexip packaging
+
+ -- Vincent Sanders <vince@pexip.com>  Fri, 22 Jul 2022 15:35:02 +0100
+
 walinuxagent (2.2.47-2pexip1) pexip-bullseye; urgency=medium
 
   * Pull new upstream
