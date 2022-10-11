@@ -1,9 +1,0 @@
-[Unit]
-Description=Microsft Azure Linux Agent (resourcedisk)
-DefaultDependencies=no
-Before=local-fs.target
-ConditionVirtualization=microsoft
-
-[Service]
-Type=oneshot
-ExecStart=/usr/sbin/waagent -resourcedisk

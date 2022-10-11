@@ -1,3 +1,10 @@
+walinuxagent (2.2.47-2pexip4) pexip; urgency=medium
+
+  * Fix service and default file handling back to Pexip-required
+    settings.
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Tue, 11 Oct 2022 16:05:23 +0100
+
 walinuxagent (2.2.47-2pexip3) pexip-bullseye; urgency=medium
 
   * Build using python3 only.

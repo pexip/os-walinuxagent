@@ -41,11 +41,5 @@ override_dh_auto_clean:
 override_dh_installinit:
 	dh_installinit -p walinuxagent --name walinuxagent
 
-override_dh_installsystemd:
-	dh_installsystemd -p walinuxagent --name walinuxagent
-	dh_installsystemd -p walinuxagent --name waagent-apt
-	dh_installsystemd -p walinuxagent --name waagent-provision
-	dh_installsystemd -p walinuxagent --name waagent-resourcedisk
-
 override_dh_python3:
 	dh_python3 -O--buildsystem=pybuild --shebang "/usr/bin/python3"

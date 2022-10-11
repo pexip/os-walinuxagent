@@ -1,1 +1,2 @@
 debian/share/* /usr/share/waagent
+debian/default/walinuxagent /etc/default
