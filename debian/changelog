@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2pexip5) pexip; urgency=medium
+
+  * walinuxagent.service: use ExecCondition instead of ExecStartPre
+
+ -- Huw Jones <huw@pexip.com>  Fri, 14 Jul 2023 16:29:51 +0100
+
 walinuxagent (2.2.47-2pexip4) pexip; urgency=medium
 
   * Fix service and default file handling back to Pexip-required

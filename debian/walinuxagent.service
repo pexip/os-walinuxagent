@@ -8,7 +8,7 @@ ConditionPathExists=/etc/waagent.conf
 [Service]
 Type=simple
 EnvironmentFile=-/etc/default/walinuxagent
-ExecStartPre=/usr/bin/test "$WALINUXAGENT_ENABLED" = "1"
+ExecCondition=/usr/bin/test "$WALINUXAGENT_ENABLED" = "1"
 ExecStart=/usr/sbin/waagent -daemon
 RuntimeDirectory=walinuxagent
 RuntimeDirectoryMode=0755
