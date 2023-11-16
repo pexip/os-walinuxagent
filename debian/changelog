@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2pexip6) pexip-bookworm; urgency=medium
+
+  * Initial bookworm build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 16 Nov 2023 10:35:27 +0000
+
 walinuxagent (2.2.47-2pexip5) pexip; urgency=medium
 
   * walinuxagent.service: use ExecCondition instead of ExecStartPre
