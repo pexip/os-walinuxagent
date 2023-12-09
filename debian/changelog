@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2pexip7) pexip-bookworm; urgency=medium
+
+  * Bookworm build for product distribution
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Sat, 09 Dec 2023 22:58:58 +0000
+
 walinuxagent (2.2.47-2pexip6) pexip-bookworm; urgency=medium
 
   * Initial bookworm build
