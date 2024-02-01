@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2+pexip24u8) pexip-bookworm; urgency=medium
+
+  * New versioning scheme
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 01 Feb 2024 16:38:28 +0000
+
 walinuxagent (2.2.47-2pexip7) pexip-bookworm; urgency=medium
 
   * Bookworm build for product distribution
