@@ -6,6 +6,7 @@ XSBC-Pexip-Original-Maintainer: Bastian Blank <bastian.blank@credativ.de>
 Build-Depends:
  debhelper-compat (= 13),
  dh-sequence-python3,
+ dh-python,
  python3,
  python3-distro,
  python3-setuptools,

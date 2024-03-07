@@ -1,3 +1,10 @@
+walinuxagent (2.2.47-2+pexip24u9) pexip-bookworm; urgency=medium
+
+  * Add build-dep on dh-python so that ${python3:Depends} works
+    properly and we get a runtime dependency on python3-distro
+
+ -- Steve McIntyre <stevemcintyre.@pexip.com>  Thu, 07 Mar 2024 21:43:53 +0000
+
 walinuxagent (2.2.47-2+pexip24u8) pexip-bookworm; urgency=medium
 
   * New versioning scheme
