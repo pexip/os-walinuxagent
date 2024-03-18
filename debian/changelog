@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2+pexip24u10) pexip; urgency=medium
+
+  * Stop trying to build for pexip-bookworm
+
+ -- Steve McIntyre <stevemcintyre.@pexip.com>  Mon, 18 Mar 2024 17:52:47 +0000
+
 walinuxagent (2.2.47-2+pexip24u9) pexip-bookworm; urgency=medium
 
   * Add build-dep on dh-python so that ${python3:Depends} works
