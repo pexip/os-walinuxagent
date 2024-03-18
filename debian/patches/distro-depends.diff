@@ -1,0 +1,15 @@
+diff --git a/setup.py b/setup.py
+index 372807f..16ac6f7 100755
+--- a/setup.py
++++ b/setup.py
+@@ -236,9 +240,7 @@ class install(_install):
+ # module was deprecated. Depending on the Linux distribution the
+ # implementation may be broken prior to Python 3.7 wher the functionality
+ # will be removed from Python 3
+-requires = []
+-if float(sys.version[:3]) >= 3.7:
+-    requires = ['distro']
++requires = ['distro']
+ 
+ modules = []
+ 
