@@ -1,0 +1,13 @@
+diff --git a/azurelinuxagent/common/osutil/bigip.py b/azurelinuxagent/common/osutil/bigip.py
+index 07cdb1d..945c89b 100644
+--- a/azurelinuxagent/common/osutil/bigip.py
++++ b/azurelinuxagent/common/osutil/bigip.py
+@@ -67,7 +67,7 @@ class BigIpOSUtil(DefaultOSUtil):
+                 break
+             time.sleep(30)
+ 
+-        if rc is 0:
++        if rc == 0:
+             return True
+ 
+         raise OSUtilError(

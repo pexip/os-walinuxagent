@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2+pexip24u11) pexip; urgency=medium
+
+  * Fix python SyntaxWarning in bigip.py
+
+ -- Steve McIntyre <stevemcintyre.@pexip.com>  Thu, 28 Mar 2024 12:41:17 +0000
+
 walinuxagent (2.2.47-2+pexip24u10) pexip; urgency=medium
 
   * Stop trying to build for pexip-bookworm
