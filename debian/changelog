@@ -1,3 +1,9 @@
+walinuxagent (2.2.47-2+pexip25u1) pexip-trixie; urgency=medium
+
+  * Initial trixie build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Tue, 29 Apr 2025 22:59:58 +0100
+
 walinuxagent (2.2.47-2+pexip24u11) pexip; urgency=medium
 
   * Fix python SyntaxWarning in bigip.py
